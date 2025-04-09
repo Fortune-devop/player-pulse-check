@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import StarRating from './StarRating';
-import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Shirt, Award, Star } from 'lucide-react';
 
 interface PlayerCardProps {
   id: string;
@@ -39,74 +40,98 @@ const PlayerCard = ({
       .toUpperCase();
   };
 
+  // Get sport-specific color
+  const getSportColorClass = () => {
+    switch(sport) {
+      case 'nfl': return 'from-[hsl(var(--sport-nfl))] to-[hsl(var(--sport-nfl))/60%]';
+      case 'nba': return 'from-[hsl(var(--sport-nba))] to-[hsl(var(--sport-nba))/60%]';
+      case 'soccer': return 'from-[hsl(var(--sport-soccer))] to-[hsl(var(--sport-soccer))/60%]';
+      default: return 'from-primary to-primary/60';
+    }
+  };
+
+  // Generate a random rating number for display (this would come from real data in a real app)
+  const generateSportSpecificRating = () => {
+    return Math.floor(70 + Math.random() * 30);
+  };
+
+  const overallRating = generateSportSpecificRating();
+
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: 1.05, rotateY: 5 }}
       whileTap={{ scale: 0.97 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      className="perspective-800"
     >
       <Link to={`/player/${id}`}>
-        <Card className="overflow-hidden transition-all hover:shadow-md">
-          <CardContent className="p-4">
-            <div className="flex flex-col items-center">
-              <motion.div whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src={photoUrl} alt={name} />
-                  <AvatarFallback>{getInitials(name)}</AvatarFallback>
-                </Avatar>
-              </motion.div>
-              
-              <motion.h3 
-                className="font-semibold text-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                {name}
-              </motion.h3>
-              
-              <motion.div 
-                className="text-sm text-muted-foreground mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {position}
-              </motion.div>
+        <Card className="overflow-hidden border-0 shadow-lg bg-transparent">
+          <AspectRatio ratio={2/3} className="w-full">
+            <div className={`bg-gradient-to-b ${getSportColorClass()} h-full w-full relative rounded-lg overflow-hidden border border-white/20 shadow-xl`}>
+              {/* Top Rating Badge */}
+              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-3 py-1 font-bold text-lg flex items-center gap-1 border border-white/30 shadow">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span>{overallRating}</span>
+              </div>
 
-              <motion.div 
-                className="mt-2 flex items-center space-x-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <StarRating initialRating={rating} readonly size={16} />
-                <span className="text-xs text-muted-foreground">
-                  ({totalRatings})
-                </span>
-              </motion.div>
+              {/* Position Badge */}
+              <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-2.5 py-0.5 font-bold text-sm border border-white/30">
+                {position}
+              </div>
+
+              {/* Sport Badge */}
+              <div className="absolute top-12 right-2 bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-sm text-white rounded-full w-8 h-8 flex items-center justify-center border border-white/30">
+                {sport === 'nfl' && <Award className="h-4 w-4" />}
+                {sport === 'nba' && <Star className="h-4 w-4" />}
+                {sport === 'soccer' && <Shirt className="h-4 w-4" />}
+              </div>
+
+              {/* Player Image Area */}
+              <div className="absolute inset-0 pt-12 flex items-center justify-center">
+                <motion.div 
+                  className="w-full h-[70%] relative z-10 flex items-center justify-center"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Avatar className="h-32 w-32 border-4 border-white/20 shadow-2xl">
+                    <AvatarImage src={photoUrl} alt={name} />
+                    <AvatarFallback className="text-4xl bg-black/40 text-white">
+                      {getInitials(name)}
+                    </AvatarFallback>
+                  </Avatar>
+                </motion.div>
+              </div>
+
+              {/* Team Logo */}
+              <div className="absolute bottom-24 right-2 bg-white rounded-full p-1 border border-gray-200 shadow-md">
+                {teamLogo && <img src={teamLogo} alt={teamName} className="h-8 w-8" />}
+              </div>
+
+              {/* Bottom Information Bar */}
+              <div className="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur-sm p-3 border-t border-white/20">
+                <h3 className="font-bold text-base text-white truncate">{name}</h3>
+                <div className="flex items-center justify-between mt-1">
+                  <div className="flex items-center">
+                    <StarRating initialRating={rating} readonly size={12} />
+                    <span className="ml-1 text-xs text-white/70">
+                      ({totalRatings})
+                    </span>
+                  </div>
+                  <span className="text-xs text-white/70">{teamName}</span>
+                </div>
+              </div>
+
+              {/* Card Shine Effect */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 rounded-lg"></div>
               
-              <motion.div 
-                className="mt-3 flex items-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                {teamLogo ? (
-                  <img src={teamLogo} alt={teamName} className="h-6 w-6 mr-2" />
-                ) : null}
-                <span className="text-sm">{teamName}</span>
-              </motion.div>
+              {/* Card Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="h-full w-full bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_transparent_70%)]"></div>
+              </div>
             </div>
-          </CardContent>
-          <CardFooter className="bg-muted/50 p-3 flex justify-between">
-            <Badge variant="outline" className="text-xs">
-              {sport.toUpperCase()}
-            </Badge>
-            <span className="text-xs text-primary font-medium">View Profile</span>
-          </CardFooter>
+          </AspectRatio>
         </Card>
       </Link>
     </motion.div>
