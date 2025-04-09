@@ -1,7 +1,5 @@
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import PlayerCard from '@/components/PlayerCard';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -44,96 +42,90 @@ const Players = () => {
   }, {} as Record<string, { team: typeof teams[0], players: typeof players }> );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <>
+      {/* Page Header */}
+      <section className="bg-primary py-8 text-white">
+        <div className="container px-4 md:px-6">
+          <h1 className="text-3xl font-bold mb-2">Browse Players</h1>
+          <p className="text-lg opacity-90">
+            Discover and rate your favorite athletes
+          </p>
+        </div>
+      </section>
       
-      <main className="flex-grow">
-        {/* Page Header */}
-        <section className="bg-primary py-8 text-white">
-          <div className="container px-4 md:px-6">
-            <h1 className="text-3xl font-bold mb-2">Browse Players</h1>
-            <p className="text-lg opacity-90">
-              Discover and rate your favorite athletes
-            </p>
-          </div>
-        </section>
-        
-        {/* Search & Filters */}
-        <section className="py-6 border-b">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end">
-              <div className="flex-1 md:mr-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    type="text"
-                    placeholder="Search players..."
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              
-              <div className="md:w-auto">
-                <Tabs value={selectedSport} onValueChange={setSelectedSport}>
-                  <TabsList>
-                    <TabsTrigger value="all">All Sports</TabsTrigger>
-                    <TabsTrigger value="nfl">NFL</TabsTrigger>
-                    <TabsTrigger value="nba">NBA</TabsTrigger>
-                    <TabsTrigger value="soccer">Soccer</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+      {/* Search & Filters */}
+      <section className="py-6 border-b">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end">
+            <div className="flex-1 md:mr-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Search players..."
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
+            
+            <div className="md:w-auto">
+              <Tabs value={selectedSport} onValueChange={setSelectedSport}>
+                <TabsList>
+                  <TabsTrigger value="all">All Sports</TabsTrigger>
+                  <TabsTrigger value="nfl">NFL</TabsTrigger>
+                  <TabsTrigger value="nba">NBA</TabsTrigger>
+                  <TabsTrigger value="soccer">Soccer</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           </div>
-        </section>
-        
-        {/* Players List */}
-        <section className="py-8">
-          <div className="container px-4 md:px-6">
-            {Object.values(playersByTeam).length > 0 ? (
-              <div className="space-y-12">
-                {Object.values(playersByTeam).map(({ team, players }) => (
-                  <div key={team.id}>
-                    <div className="flex items-center mb-6">
-                      <img src={team.logo} alt={team.name} className="w-8 h-8 mr-3" />
-                      <h2 className="text-2xl font-bold">{team.name}</h2>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                      {players.map(player => (
-                        <PlayerCard
-                          key={player.id}
-                          id={player.id}
-                          name={player.name}
-                          position={player.position}
-                          teamName={team.name}
-                          teamLogo={team.logo}
-                          photoUrl={player.photoUrl}
-                          rating={calculateAverageRating(player.id)}
-                          totalRatings={5} // Mock value
-                          sport={team.sport}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-xl font-medium mb-2">No players found</p>
-                <p className="text-muted-foreground">
-                  Try changing your search or filters
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
       
-      <Footer />
-    </div>
+      {/* Players List */}
+      <section className="py-8">
+        <div className="container px-4 md:px-6">
+          {Object.values(playersByTeam).length > 0 ? (
+            <div className="space-y-12">
+              {Object.values(playersByTeam).map(({ team, players }) => (
+                <div key={team.id}>
+                  <div className="flex items-center mb-6">
+                    <img src={team.logo} alt={team.name} className="w-8 h-8 mr-3" />
+                    <h2 className="text-2xl font-bold">{team.name}</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {players.map(player => (
+                      <PlayerCard
+                        key={player.id}
+                        id={player.id}
+                        name={player.name}
+                        position={player.position}
+                        teamName={team.name}
+                        teamLogo={team.logo}
+                        photoUrl={player.photoUrl}
+                        rating={calculateAverageRating(player.id)}
+                        totalRatings={5} // Mock value
+                        sport={team.sport}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-xl font-medium mb-2">No players found</p>
+              <p className="text-muted-foreground">
+                Try changing your search or filters
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 };
 
