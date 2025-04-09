@@ -11,6 +11,8 @@ import PlayerDetail from "./pages/PlayerDetail";
 import Matches from "./pages/Matches";
 import Players from "./pages/Players";
 import NotFound from "./pages/NotFound";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -22,15 +24,28 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/match/:id" element={<MatchDetail />} />
-            <Route path="/player/:id" element={<PlayerDetail />} />
-            <Route path="/matches" element={<Matches />} />
-            <Route path="/players" element={<Players />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/match/:id" element={<MatchDetail />} />
+                <Route path="/player/:id" element={<PlayerDetail />} />
+                <Route path="/matches" element={<Matches />} />
+                <Route path="/players" element={<Players />} />
+                <Route path="/sport/:sport" element={<Players />} />
+                <Route path="/about" element={<NotFound />} />
+                <Route path="/faq" element={<NotFound />} />
+                <Route path="/contact" element={<NotFound />} />
+                <Route path="/terms" element={<NotFound />} />
+                <Route path="/privacy" element={<NotFound />} />
+                <Route path="/cookies" element={<NotFound />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
