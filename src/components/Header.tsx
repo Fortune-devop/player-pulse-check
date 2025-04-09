@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Search, Basketball, Football, Shirt } from 'lucide-react';
+import { Search, Trophy, Gamepad, Shirt } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -19,11 +19,11 @@ const Header = () => {
         
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/sport/nba" className="flex items-center space-x-1 text-sm font-medium hover:text-primary">
-            <Basketball className="h-4 w-4" />
+            <Trophy className="h-4 w-4" />
             <span>NBA</span>
           </Link>
           <Link to="/sport/nfl" className="flex items-center space-x-1 text-sm font-medium hover:text-primary">
-            <Football className="h-4 w-4" />
+            <Gamepad className="h-4 w-4" />
             <span>NFL</span>
           </Link>
           <Link to="/sport/soccer" className="flex items-center space-x-1 text-sm font-medium hover:text-primary">
