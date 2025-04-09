@@ -71,46 +71,50 @@ const PlayerCard = ({
           <AspectRatio ratio={2/3} className="w-full">
             <div className={`bg-gradient-to-b ${getSportColorClass()} h-full w-full relative rounded-lg overflow-hidden border border-white/20 shadow-xl`}>
               {/* Top Rating Badge */}
-              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-3 py-1 font-bold text-lg flex items-center gap-1 border border-white/30 shadow">
+              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-3 py-1 font-bold text-lg flex items-center gap-1 border border-white/30 shadow z-20">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span>{overallRating}</span>
               </div>
 
               {/* Position Badge */}
-              <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-2.5 py-0.5 font-bold text-sm border border-white/30">
+              <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white rounded-full px-2.5 py-0.5 font-bold text-sm border border-white/30 z-20">
                 {position}
               </div>
 
               {/* Sport Badge */}
-              <div className="absolute top-12 right-2 bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-sm text-white rounded-full w-8 h-8 flex items-center justify-center border border-white/30">
+              <div className="absolute top-12 right-2 bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-sm text-white rounded-full w-8 h-8 flex items-center justify-center border border-white/30 z-20">
                 {sport === 'nfl' && <Award className="h-4 w-4" />}
                 {sport === 'nba' && <Star className="h-4 w-4" />}
                 {sport === 'soccer' && <Shirt className="h-4 w-4" />}
               </div>
 
-              {/* Player Image Area */}
-              <div className="absolute inset-0 pt-12 flex items-center justify-center">
-                <motion.div 
-                  className="w-full h-[70%] relative z-10 flex items-center justify-center"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <Avatar className="h-32 w-32 border-4 border-white/20 shadow-2xl">
-                    <AvatarImage src={photoUrl} alt={name} />
-                    <AvatarFallback className="text-4xl bg-black/40 text-white">
+              {/* Player Image Area - Full Size */}
+              <div className="absolute inset-0 z-10">
+                {photoUrl ? (
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
+                    <img 
+                      src={photoUrl} 
+                      alt={name} 
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-sm">
+                    <div className="text-4xl font-bold text-white/50">
                       {getInitials(name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Team Logo */}
-              <div className="absolute bottom-24 right-2 bg-white rounded-full p-1 border border-gray-200 shadow-md">
+              <div className="absolute bottom-24 right-2 bg-white rounded-full p-1 border border-gray-200 shadow-md z-20">
                 {teamLogo && <img src={teamLogo} alt={teamName} className="h-8 w-8" />}
               </div>
 
               {/* Bottom Information Bar */}
-              <div className="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur-sm p-3 border-t border-white/20">
+              <div className="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur-sm p-3 border-t border-white/20 z-20">
                 <h3 className="font-bold text-base text-white truncate">{name}</h3>
                 <div className="flex items-center justify-between mt-1">
                   <div className="flex items-center">
@@ -124,10 +128,10 @@ const PlayerCard = ({
               </div>
 
               {/* Card Shine Effect */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 rounded-lg"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 rounded-lg z-10"></div>
               
               {/* Card Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
+              <div className="absolute inset-0 opacity-5 z-0">
                 <div className="h-full w-full bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_transparent_70%)]"></div>
               </div>
             </div>
