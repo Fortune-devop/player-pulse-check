@@ -94,7 +94,7 @@ const Index = () => {
       <section className="py-12 bg-gray-50">
         <div className="container px-4 md:px-6">
           <h2 className="text-2xl font-bold mb-8">Live & Upcoming Matches</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
             {matchesToShow.map(match => {
               const homeTeam = getTeamById(match.homeTeamId);
               const awayTeam = getTeamById(match.awayTeamId);
