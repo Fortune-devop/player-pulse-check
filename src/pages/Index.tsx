@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import MatchCard from '@/components/MatchCard';
 import PlayerCard from '@/components/PlayerCard';
 import { matches, players, teams, getTeamById } from '@/data/mockData';
+import { ArrowRight } from 'lucide-react';
+import MotionWrapper, { scaleIn } from '@/components/animations/MotionWrapper';
 
 const Index = () => {
   // Get matches to display
@@ -22,24 +24,68 @@ const Index = () => {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="bg-primary py-16 text-white">
-        <div className="container px-4 md:px-6 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            Rate Your Favorite Athletes
-          </h1>
-          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            Join the community of passionate sports fans and share your opinions on player performances
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/matches">
-              <button className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg">
-                Browse Matches
-              </button>
-            </Link>
-            <button className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg">
-              Sign Up for Free
-            </button>
+      {/* Modern Hero Section with Image */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 text-white">
+        <div className="absolute inset-0 bg-black/30 z-10"></div>
+        
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=2000" 
+            alt="Sports technology background" 
+            className="w-full h-full object-cover opacity-30"
+          />
+        </div>
+        
+        <div className="container relative z-20 px-4 md:px-6 py-16 md:py-24 flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 md:pr-8 mb-8 md:mb-0">
+            <MotionWrapper 
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+              }}
+            >
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+                Rate Your Favorite <span className="text-warning">Athletes</span> Like Never Before
+              </h1>
+              <p className="text-lg mb-8 text-white/90 max-w-lg">
+                Join thousands of passionate sports fans sharing opinions and insights on player performances across NBA, NFL, and Soccer
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link to="/matches">
+                  <button className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-all duration-300">
+                    Browse Matches
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </Link>
+                <button className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg transition-all duration-300">
+                  Sign Up for Free
+                </button>
+              </div>
+            </MotionWrapper>
+          </div>
+          
+          <div className="md:w-1/2">
+            <MotionWrapper variants={scaleIn}>
+              <div className="relative">
+                <div className="w-64 h-64 md:w-80 md:h-80 bg-warning/20 absolute -top-6 -left-6 rounded-full blur-2xl"></div>
+                <div className="bg-white p-4 rounded-2xl shadow-xl rotate-3 relative z-10">
+                  <div className="bg-gray-100 p-3 rounded-xl">
+                    <img 
+                      src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800" 
+                      alt="Player ratings dashboard" 
+                      className="rounded-lg shadow-sm"
+                    />
+                  </div>
+                  <div className="mt-3 p-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-green-500 h-3 w-3 rounded-full"></div>
+                      <span className="text-sm font-medium text-gray-700">Live Ratings</span>
+                    </div>
+                    <div className="text-sm font-bold text-primary">RateMyPlayer.com</div>
+                  </div>
+                </div>
+              </div>
+            </MotionWrapper>
           </div>
         </div>
       </section>
