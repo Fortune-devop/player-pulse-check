@@ -1,10 +1,28 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Search, Trophy, Gamepad, Shirt } from 'lucide-react';
+import { Search, Trophy, Gamepad, Shirt, User, LogIn } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import UserMenu from './auth/UserMenu';
+import SignIn from './auth/SignIn';
+import SignUp from './auth/SignUp';
 
 const Header = () => {
+  const { isAuthenticated } = useAuth();
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
+
+  const openSignIn = () => {
+    setShowSignIn(true);
+    setShowSignUp(false);
+  };
+
+  const openSignUp = () => {
+    setShowSignUp(true);
+    setShowSignIn(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 md:px-6">
@@ -37,10 +55,35 @@ const Header = () => {
             <Search className="h-5 w-5" />
             <span className="sr-only">Search</span>
           </Button>
-          <Button variant="outline">Sign In</Button>
-          <Button>Sign Up</Button>
+          
+          {isAuthenticated ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Button variant="outline" onClick={openSignIn}>
+                <LogIn className="mr-2 h-4 w-4" />
+                Sign In
+              </Button>
+              <Button onClick={openSignUp}>
+                <User className="mr-2 h-4 w-4" />
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
       </div>
+
+      <SignIn 
+        isOpen={showSignIn} 
+        onClose={() => setShowSignIn(false)} 
+        onOpenSignUp={openSignUp} 
+      />
+      
+      <SignUp 
+        isOpen={showSignUp} 
+        onClose={() => setShowSignUp(false)} 
+        onOpenSignIn={openSignIn} 
+      />
     </header>
   );
 };
