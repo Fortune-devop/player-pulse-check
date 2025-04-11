@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Google } from 'lucide-react';
+import { Eye, EyeOff, Mail, Globe } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +26,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 
-// Form schema with validation
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
@@ -45,7 +43,6 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
   const { login, googleSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
-  // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,12 +51,8 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
     },
   });
 
-  // Handle form submission
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, this would make an API call to authenticate
     console.log('Sign in attempt:', values);
-    
-    // For demo purposes, simulate a successful login
     const userData = {
       id: '123456',
       email: values.email, 
@@ -184,7 +177,7 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
               onClick={handleGoogleSignIn}
               className="w-full"
             >
-              <Google className="mr-2 h-4 w-4" />
+              <Globe className="mr-2 h-4 w-4" />
               Sign In with Google
             </Button>
             

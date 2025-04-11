@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Google } from 'lucide-react';
+import { Eye, EyeOff, Globe } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +26,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 
-// Form schema with validation
 const formSchema = z.object({
   firstName: z.string().min(2, { message: 'First name must be at least 2 characters' }),
   lastName: z.string().min(2, { message: 'Last name must be at least 2 characters' }),
@@ -51,7 +49,6 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,12 +60,9 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
     },
   });
 
-  // Handle form submission
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, this would make an API call to register the user
     console.log('Sign up data:', values);
     
-    // For demo purposes, simulate successful registration and login
     const userData = { 
       id: '123456',
       name: `${values.firstName} ${values.lastName}`,
@@ -241,7 +235,7 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
               onClick={handleGoogleSignIn}
               className="w-full"
             >
-              <Google className="mr-2 h-4 w-4" />
+              <Globe className="mr-2 h-4 w-4" />
               Sign Up with Google
             </Button>
             
