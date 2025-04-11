@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { toast } from 'sonner';
 import { Mail, ArrowLeft } from 'lucide-react';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/config/firebase';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -37,6 +39,8 @@ interface ForgotPasswordProps {
 }
 
 const ForgotPassword = ({ isOpen, onClose, onBackToSignIn }: ForgotPasswordProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,12 +50,17 @@ const ForgotPassword = ({ isOpen, onClose, onBackToSignIn }: ForgotPasswordProps
   });
 
   // Handle form submission
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real app, this would make an API call to send a password reset email
-    console.log('Password reset requested for:', values.email);
-    
-    toast.success('Password reset instructions sent. Please check your email.');
-    onClose();
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsSubmitting(true);
+      await sendPasswordResetEmail(auth, values.email);
+      toast.success('Password reset instructions sent. Please check your email.');
+      onClose();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send reset email');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,9 +89,9 @@ const ForgotPassword = ({ isOpen, onClose, onBackToSignIn }: ForgotPasswordProps
               )}
             />
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               <Mail className="mr-2 h-4 w-4" />
-              Send Reset Instructions
+              {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}
             </Button>
             
             <DialogFooter className="pt-4">

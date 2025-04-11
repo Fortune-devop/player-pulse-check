@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -46,9 +47,10 @@ interface SignUpProps {
 
 const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
   const navigate = useNavigate();
-  const { login, googleSignIn } = useAuth();
+  const { register, googleSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,30 +63,30 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('Sign up data:', values);
-    
-    const userData = { 
-      id: '123456',
-      name: `${values.firstName} ${values.lastName}`,
-      email: values.email, 
-      avatar: null,
-    };
-    
-    login(userData);
-    toast.success('Account created successfully!');
-    onClose();
-    navigate('/profile');
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsSubmitting(true);
+      const fullName = `${values.firstName} ${values.lastName}`;
+      await register(fullName, values.email, values.password);
+      onClose();
+      navigate('/profile');
+    } catch (error) {
+      console.error("Registration error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
     try {
+      setIsSubmitting(true);
       await googleSignIn();
-      toast.success('Signed up with Google successfully!');
       onClose();
       navigate('/profile');
     } catch (error) {
-      toast.error('Failed to sign up with Google. Please try again.');
+      console.error("Google sign in error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -219,7 +221,9 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
               )}
             />
             
-            <Button type="submit" className="w-full">Sign Up with Email</Button>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing Up...' : 'Sign Up with Email'}
+            </Button>
             
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
@@ -234,10 +238,11 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
               type="button"
               variant="outline"
               onClick={handleGoogleSignIn}
+              disabled={isSubmitting}
               className="w-full"
             >
               <GoogleIcon className="mr-2 h-4 w-4" />
-              Sign Up with Google
+              {isSubmitting ? 'Signing Up...' : 'Sign Up with Google'}
             </Button>
             
             <DialogFooter className="pt-4">

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -43,6 +44,7 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
   const navigate = useNavigate();
   const { login, googleSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,29 +54,29 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('Sign in attempt:', values);
-    const userData = {
-      id: '123456',
-      email: values.email, 
-      name: values.email.split('@')[0],
-      avatar: null,
-    };
-
-    login(userData);
-    toast.success('Signed in successfully!');
-    onClose();
-    navigate('/profile');
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsSubmitting(true);
+      await login(values.email, values.password);
+      onClose();
+      navigate('/profile');
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
     try {
+      setIsSubmitting(true);
       await googleSignIn();
-      toast.success('Signed in with Google successfully!');
       onClose();
       navigate('/profile');
     } catch (error) {
-      toast.error('Failed to sign in with Google. Please try again.');
+      console.error("Google sign in error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -158,9 +160,9 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
               )}
             />
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               <Mail className="mr-2 h-4 w-4" />
-              Sign In with Email
+              {isSubmitting ? 'Signing in...' : 'Sign In with Email'}
             </Button>
             
             <div className="relative my-4">
@@ -176,10 +178,11 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
               type="button"
               variant="outline"
               onClick={handleGoogleSignIn}
+              disabled={isSubmitting}
               className="w-full"
             >
               <GoogleIcon className="mr-2 h-4 w-4" />
-              Sign In with Google
+              {isSubmitting ? 'Signing in...' : 'Sign In with Google'}
             </Button>
             
             <DialogFooter className="pt-4">

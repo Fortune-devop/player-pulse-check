@@ -1,10 +1,9 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,36 +16,19 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext';
 
 // Form schema with validation
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  avatarUrl: z.string().optional(),
+  email: z.string().email({ message: 'Please enter a valid email address' }).optional(),
+  avatarUrl: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
 });
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string | null;
-}
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
-  
-  useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      navigate('/');
-      return;
-    }
-    
-    setUser(JSON.parse(storedUser));
-  }, [navigate]);
+  const { user, isAuthenticated, loading, logout, updateUserProfile } = useAuth();
   
   // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,28 +51,24 @@ const Profile = () => {
     }
   }, [user, form]);
 
-  // Handle form submission
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (user) {
-      // In a real app, this would make an API call to update the user
-      const updatedUser = {
-        ...user,
-        name: values.name,
-        email: values.email,
-        avatar: values.avatarUrl || null,
-      };
-      
-      // For demo purposes, update localStorage
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      toast.success('Profile updated successfully!');
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/');
     }
+  }, [isAuthenticated, loading, navigate]);
+
+  // Handle form submission
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await updateUserProfile({
+      name: values.name,
+      avatar: values.avatarUrl || null,
+    });
   };
 
   // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    toast.info('You have been logged out');
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -103,8 +81,16 @@ const Profile = () => {
       .toUpperCase();
   };
 
+  if (loading) {
+    return (
+      <div className="container py-10 flex justify-center items-center min-h-[50vh]">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
   if (!user) {
-    return <div className="container py-10">Loading...</div>;
+    return null; // We'll redirect in the useEffect
   }
 
   return (
@@ -147,7 +133,7 @@ const Profile = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
