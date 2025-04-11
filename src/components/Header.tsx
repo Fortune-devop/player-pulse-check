@@ -7,20 +7,30 @@ import { useAuth } from '@/context/AuthContext';
 import UserMenu from './auth/UserMenu';
 import SignIn from './auth/SignIn';
 import SignUp from './auth/SignUp';
+import ForgotPassword from './auth/ForgotPassword';
 
 const Header = () => {
   const { isAuthenticated } = useAuth();
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const openSignIn = () => {
     setShowSignIn(true);
     setShowSignUp(false);
+    setShowForgotPassword(false);
   };
 
   const openSignUp = () => {
     setShowSignUp(true);
     setShowSignIn(false);
+    setShowForgotPassword(false);
+  };
+
+  const openForgotPassword = () => {
+    setShowForgotPassword(true);
+    setShowSignIn(false);
+    setShowSignUp(false);
   };
 
   return (
@@ -77,12 +87,19 @@ const Header = () => {
         isOpen={showSignIn} 
         onClose={() => setShowSignIn(false)} 
         onOpenSignUp={openSignUp} 
+        onOpenForgotPassword={openForgotPassword}
       />
       
       <SignUp 
         isOpen={showSignUp} 
         onClose={() => setShowSignUp(false)} 
         onOpenSignIn={openSignIn} 
+      />
+      
+      <ForgotPassword
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToSignIn={openSignIn}
       />
     </header>
   );

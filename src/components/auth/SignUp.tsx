@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Google } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -47,7 +47,7 @@ interface SignUpProps {
 
 const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, googleSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -80,6 +80,17 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
     toast.success('Account created successfully!');
     onClose();
     navigate('/profile');
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+      toast.success('Signed up with Google successfully!');
+      onClose();
+      navigate('/profile');
+    } catch (error) {
+      toast.error('Failed to sign up with Google. Please try again.');
+    }
   };
 
   const handleSwitchToSignIn = () => {
@@ -213,11 +224,31 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
               )}
             />
             
+            <Button type="submit" className="w-full">Sign Up with Email</Button>
+            
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              className="w-full"
+            >
+              <Google className="mr-2 h-4 w-4" />
+              Sign Up with Google
+            </Button>
+            
             <DialogFooter className="pt-4">
-              <Button variant="outline" type="button" onClick={handleSwitchToSignIn}>
-                Already have an account?
+              <Button variant="link" type="button" onClick={handleSwitchToSignIn}>
+                Already have an account? Sign In
               </Button>
-              <Button type="submit">Sign Up</Button>
             </DialogFooter>
           </form>
         </Form>

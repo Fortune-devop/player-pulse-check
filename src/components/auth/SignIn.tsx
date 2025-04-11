@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Eye, EyeOff, Mail, Google } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -24,6 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/AuthContext';
 
 // Form schema with validation
 const formSchema = z.object({
@@ -35,10 +37,13 @@ interface SignInProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenSignUp: () => void;
+  onOpenForgotPassword: () => void;
 }
 
-const SignIn = ({ isOpen, onClose, onOpenSignUp }: SignInProps) => {
+const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInProps) => {
   const navigate = useNavigate();
+  const { login, googleSignIn } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   
   // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
@@ -55,21 +60,42 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp }: SignInProps) => {
     console.log('Sign in attempt:', values);
     
     // For demo purposes, simulate a successful login
-    localStorage.setItem('user', JSON.stringify({ 
+    const userData = {
       id: '123456',
       email: values.email, 
       name: values.email.split('@')[0],
       avatar: null,
-    }));
+    };
 
+    login(userData);
     toast.success('Signed in successfully!');
     onClose();
     navigate('/profile');
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+      toast.success('Signed in with Google successfully!');
+      onClose();
+      navigate('/profile');
+    } catch (error) {
+      toast.error('Failed to sign in with Google. Please try again.');
+    }
+  };
+
   const handleSwitchToSignUp = () => {
     onClose();
     onOpenSignUp();
+  };
+
+  const handleForgotPassword = () => {
+    onClose();
+    onOpenForgotPassword();
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -105,18 +131,67 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp }: SignInProps) => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <div className="relative">
+                      <Input 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        {...field} 
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
+            <Button type="submit" className="w-full">
+              <Mail className="mr-2 h-4 w-4" />
+              Sign In with Email
+            </Button>
+            
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              className="w-full"
+            >
+              <Google className="mr-2 h-4 w-4" />
+              Sign In with Google
+            </Button>
+            
             <DialogFooter className="pt-4">
-              <Button variant="outline" type="button" onClick={handleSwitchToSignUp}>
-                Need an account?
+              <Button variant="link" type="button" onClick={handleSwitchToSignUp}>
+                Need an account? Sign Up
               </Button>
-              <Button type="submit">Sign In</Button>
             </DialogFooter>
           </form>
         </Form>

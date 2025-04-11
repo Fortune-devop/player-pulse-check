@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { toast } from 'sonner';
 
 type User = {
   id: string;
@@ -13,6 +14,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   login: (user: Omit<NonNullable<User>, 'id'> & { id: string }) => void;
   logout: () => void;
+  googleSignIn: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,6 +44,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    toast.success('Logged out successfully');
+  };
+
+  // Google Sign In simulation
+  const googleSignIn = async (): Promise<void> => {
+    // In a real app, this would integrate with Google OAuth
+    // For demo purposes, we'll simulate a successful Google login
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const googleUser = {
+          id: 'google123',
+          name: 'Google User',
+          email: 'google.user@gmail.com',
+          avatar: null,
+        };
+        
+        setUser(googleUser);
+        localStorage.setItem('user', JSON.stringify(googleUser));
+        resolve();
+      }, 1000); // Simulate network delay
+    });
   };
 
   const value = {
@@ -49,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!user,
     login,
     logout,
+    googleSignIn,
   };
 
   return (
