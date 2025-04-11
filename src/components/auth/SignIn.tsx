@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Globe } from 'lucide-react';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
+import GoogleIcon from '../icons/GoogleIcon';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -177,7 +178,7 @@ const SignIn = ({ isOpen, onClose, onOpenSignUp, onOpenForgotPassword }: SignInP
               onClick={handleGoogleSignIn}
               className="w-full"
             >
-              <Globe className="mr-2 h-4 w-4" />
+              <GoogleIcon className="mr-2 h-4 w-4" />
               Sign In with Google
             </Button>
             

@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Search, Trophy, Gamepad, Shirt, User, LogIn, Globe } from 'lucide-react';
+import { Search, Trophy, Gamepad, Shirt, User, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import UserMenu from './auth/UserMenu';
 import SignIn from './auth/SignIn';
