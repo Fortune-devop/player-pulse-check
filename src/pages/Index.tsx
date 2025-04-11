@@ -1,13 +1,15 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import MatchCard from '@/components/MatchCard';
 import PlayerCard from '@/components/PlayerCard';
 import { matches, players, teams, getTeamById } from '@/data/mockData';
 import { ArrowRight } from 'lucide-react';
 import MotionWrapper, { scaleIn } from '@/components/animations/MotionWrapper';
+import SignUp from '@/components/auth/SignUp';
 
 const Index = () => {
+  const [showSignUp, setShowSignUp] = useState(false);
+  
   // Get matches to display
   const matchesToShow = [...matches].sort((a, b) => {
     // Sort by status: live first, then upcoming, then finished
@@ -21,6 +23,10 @@ const Index = () => {
 
   // Get featured players (using the ones with ratings)
   const featuredPlayers = players.slice(0, 4);
+
+  const openSignUp = () => {
+    setShowSignUp(true);
+  };
 
   return (
     <>
@@ -57,7 +63,10 @@ const Index = () => {
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </Link>
-                <button className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg transition-all duration-300">
+                <button 
+                  onClick={openSignUp} 
+                  className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+                >
                   Sign Up for Free
                 </button>
               </div>
@@ -200,11 +209,21 @@ const Index = () => {
           <p className="text-lg mb-8 max-w-2xl mx-auto">
             Join thousands of sports fans rating and discussing player performances
           </p>
-          <button className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg">
+          <button 
+            onClick={openSignUp} 
+            className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg"
+          >
             Sign Up Now
           </button>
         </div>
       </section>
+
+      {/* SignUp Dialog */}
+      <SignUp 
+        isOpen={showSignUp} 
+        onClose={() => setShowSignUp(false)} 
+        onOpenSignIn={() => setShowSignUp(false)} 
+      />
     </>
   );
 };
