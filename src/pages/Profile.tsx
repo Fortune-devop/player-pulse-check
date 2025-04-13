@@ -18,6 +18,10 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { InfoIcon, CheckCircle, XCircle, Mail } from 'lucide-react';
 
 // Form schema with validation
 const formSchema = z.object({
@@ -28,7 +32,7 @@ const formSchema = z.object({
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loading, logout, updateUserProfile } = useAuth();
+  const { user, isAuthenticated, loading, logout, updateUserProfile, sendVerificationEmail } = useAuth();
   
   // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,6 +70,11 @@ const Profile = () => {
     });
   };
 
+  // Handle verification email
+  const handleSendVerificationEmail = async () => {
+    await sendVerificationEmail();
+  };
+
   // Handle logout
   const handleLogout = async () => {
     await logout();
@@ -98,18 +107,49 @@ const Profile = () => {
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={user.avatar || ''} />
-                <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-2xl">{user.name}</CardTitle>
-                <CardDescription>{user.email}</CardDescription>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={user.avatar || ''} />
+                  <AvatarFallback className="text-lg">{getInitials(user.name)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-2xl">{user.name}</CardTitle>
+                  <CardDescription>{user.email}</CardDescription>
+                  <div className="mt-2">
+                    {user.emailVerified ? (
+                      <Badge className="bg-green-500">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        <XCircle className="h-3 w-3 mr-1" />
+                        Unverified
+                      </Badge>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
+            {!user.emailVerified && (
+              <Alert className="mb-6">
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Please verify your email address to access all features.
+                  <Button 
+                    variant="link" 
+                    onClick={handleSendVerificationEmail}
+                    className="p-0 h-auto ml-2"
+                  >
+                    Resend verification email
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField

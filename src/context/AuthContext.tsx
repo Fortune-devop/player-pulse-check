@@ -9,6 +9,7 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -19,6 +20,7 @@ type User = {
   name: string;
   email: string;
   avatar: string | null;
+  emailVerified: boolean;
 } | null;
 
 type AuthContextType = {
@@ -30,6 +32,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   googleSignIn: () => Promise<void>;
   updateUserProfile: (data: { name?: string; avatar?: string | null }) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,7 +53,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: firebaseUser.uid,
           name: firebaseUser.displayName || userDoc.data()?.name || 'User',
           email: firebaseUser.email || '',
-          avatar: firebaseUser.photoURL || userDoc.data()?.avatar || null
+          avatar: firebaseUser.photoURL || userDoc.data()?.avatar || null,
+          emailVerified: firebaseUser.emailVerified
         };
         
         setUser(userData);
@@ -74,17 +78,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         displayName: name
       });
 
+      // Send verification email
+      await sendEmailVerification(userCredential.user);
+
       // Store additional user information in Firestore
       await setDoc(doc(db, "users", userCredential.user.uid), {
         name,
         email,
         avatar: null,
+        emailVerified: false,
         createdAt: new Date()
       });
       
-      toast.success('Account created successfully!');
+      toast.success('Account created successfully! Please check your email to verify your account.');
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create account';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  // Send verification email
+  const sendVerificationEmail = async (): Promise<void> => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await sendEmailVerification(currentUser);
+        toast.success('Verification email sent! Please check your inbox.');
+      } else {
+        toast.error('No user is currently signed in.');
+      }
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to send verification email';
       toast.error(errorMessage);
       throw error;
     }
@@ -93,8 +118,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Login with email/password
   const login = async (email: string, password: string): Promise<void> => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success('Signed in successfully!');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      if (!userCredential.user.emailVerified) {
+        toast.warning('Please verify your email address to access all features.');
+      } else {
+        toast.success('Signed in successfully!');
+      }
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to sign in';
       toast.error(errorMessage);
@@ -189,7 +219,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register,
     logout,
     googleSignIn,
-    updateUserProfile
+    updateUserProfile,
+    sendVerificationEmail
   };
 
   return (
