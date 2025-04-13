@@ -11,7 +11,7 @@ import {
   updateProfile,
   sendEmailVerification,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import { toast } from 'sonner';
 
@@ -21,6 +21,7 @@ type User = {
   email: string;
   avatar: string | null;
   emailVerified: boolean;
+  isApproved?: boolean;
 } | null;
 
 type AuthContextType = {
@@ -36,6 +37,23 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Add this function outside of the AuthProvider to be used by the Waitlist component
+export const addToWaitlist = async (name: string, email: string): Promise<void> => {
+  try {
+    // Add the user to the waitlist collection
+    await addDoc(collection(db, "waitlist"), {
+      name,
+      email,
+      createdAt: serverTimestamp(),
+      status: 'pending' // pending, approved, rejected
+    });
+  } catch (error: any) {
+    const errorMessage = error.message || 'Failed to join waitlist';
+    toast.error(errorMessage);
+    throw error;
+  }
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(null);
@@ -54,7 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: firebaseUser.displayName || userDoc.data()?.name || 'User',
           email: firebaseUser.email || '',
           avatar: firebaseUser.photoURL || userDoc.data()?.avatar || null,
-          emailVerified: firebaseUser.emailVerified
+          emailVerified: firebaseUser.emailVerified,
+          isApproved: userDoc.data()?.isApproved ?? true // Default to true for existing users
         };
         
         setUser(userData);
@@ -87,10 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         avatar: null,
         emailVerified: false,
-        createdAt: new Date()
+        isApproved: false, // New users are not approved by default
+        createdAt: serverTimestamp()
       });
       
-      toast.success('Account created successfully! Please check your email to verify your account.');
+      toast.success('Account created successfully! Please check your email to verify your account. You will be notified when your account is approved.');
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to create account';
       toast.error(errorMessage);
@@ -120,6 +140,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
+      // Check if user is approved
+      const userDocRef = doc(db, "users", userCredential.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.data()?.isApproved) {
+        await signOut(auth);
+        toast.error('Your account is pending approval. You will be notified when approved.');
+        return;
+      }
+      
       if (!userCredential.user.emailVerified) {
         toast.warning('Please verify your email address to access all features.');
       } else {
@@ -148,8 +178,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: result.user.displayName,
           email: result.user.email,
           avatar: result.user.photoURL,
-          createdAt: new Date()
+          isApproved: false, // New Google users need approval too
+          createdAt: serverTimestamp()
         });
+        
+        toast.info('Your account has been created and is pending approval.');
+        await signOut(auth); // Sign out until approved
+        return;
+      } else if (!userDoc.data()?.isApproved) {
+        toast.error('Your account is pending approval.');
+        await signOut(auth);
+        return;
       }
       
       toast.success('Signed in with Google successfully!');

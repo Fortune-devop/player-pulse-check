@@ -6,9 +6,11 @@ import { matches, players, teams, getTeamById } from '@/data/mockData';
 import { ArrowRight } from 'lucide-react';
 import MotionWrapper, { scaleIn } from '@/components/animations/MotionWrapper';
 import SignUp from '@/components/auth/SignUp';
+import Waitlist from '@/components/auth/Waitlist';
 
 const Index = () => {
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
   
   // Get matches to display
   const matchesToShow = [...matches].sort((a, b) => {
@@ -26,6 +28,10 @@ const Index = () => {
 
   const openSignUp = () => {
     setShowSignUp(true);
+  };
+
+  const openWaitlist = () => {
+    setShowWaitlist(true);
   };
 
   return (
@@ -64,10 +70,10 @@ const Index = () => {
                   </button>
                 </Link>
                 <button 
-                  onClick={openSignUp} 
+                  onClick={openWaitlist} 
                   className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg transition-all duration-300"
                 >
-                  Sign Up for Free
+                  Join Waitlist
                 </button>
               </div>
             </MotionWrapper>
@@ -171,9 +177,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-xl font-bold">1</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Browse Matches</h3>
+              <h3 className="text-lg font-semibold mb-2">Join the Waitlist</h3>
               <p className="text-muted-foreground">
-                Find live and upcoming matches across NFL, NBA, and Soccer leagues
+                Sign up to join our exclusive community of sports fans and analysts
               </p>
             </div>
             
@@ -181,9 +187,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-xl font-bold">2</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Rate Players</h3>
+              <h3 className="text-lg font-semibold mb-2">Get Approved Access</h3>
               <p className="text-muted-foreground">
-                Give 1-5 star ratings and leave comments on player performances
+                Once approved, you'll have full access to rate players and join discussions
               </p>
             </div>
             
@@ -191,9 +197,9 @@ const Index = () => {
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-xl font-bold">3</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Community Insights</h3>
+              <h3 className="text-lg font-semibold mb-2">Rate & Engage</h3>
               <p className="text-muted-foreground">
-                See aggregated fan ratings and discover what others think
+                Rate players, share insights, and connect with other passionate fans
               </p>
             </div>
           </div>
@@ -204,16 +210,16 @@ const Index = () => {
       <section className="py-12 bg-primary text-white">
         <div className="container px-4 md:px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to Share Your Opinion?
+            Join Our Exclusive Community
           </h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Join thousands of sports fans rating and discussing player performances
+            We're carefully growing our community of dedicated sports fans. Request access today!
           </p>
           <button 
-            onClick={openSignUp} 
+            onClick={openWaitlist} 
             className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg"
           >
-            Sign Up Now
+            Join the Waitlist
           </button>
         </div>
       </section>
@@ -223,6 +229,16 @@ const Index = () => {
         isOpen={showSignUp} 
         onClose={() => setShowSignUp(false)} 
         onOpenSignIn={() => setShowSignUp(false)} 
+      />
+
+      {/* Waitlist Dialog */}
+      <Waitlist
+        isOpen={showWaitlist}
+        onClose={() => setShowWaitlist(false)}
+        onOpenSignIn={() => {
+          setShowWaitlist(false);
+          // You might want to open SignIn here if needed
+        }}
       />
     </>
   );
