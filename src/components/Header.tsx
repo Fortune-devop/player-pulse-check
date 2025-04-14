@@ -7,6 +7,7 @@ import UserMenu from './auth/UserMenu';
 import SignIn from './auth/SignIn';
 import SignUp from './auth/SignUp';
 import ForgotPassword from './auth/ForgotPassword';
+import Waitlist from './auth/Waitlist';
 
 const Header = () => {
   const { isAuthenticated } = useAuth();
