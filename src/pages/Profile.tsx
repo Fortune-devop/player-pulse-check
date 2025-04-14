@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -22,6 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { InfoIcon, CheckCircle, XCircle, Mail } from 'lucide-react';
+import EmailVerificationPopup from '@/components/auth/EmailVerificationPopup';
 
 // Form schema with validation
 const formSchema = z.object({
@@ -33,6 +33,7 @@ const formSchema = z.object({
 const Profile = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, loading, logout, updateUserProfile, sendVerificationEmail } = useAuth();
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   
   // Initialize form with validation schema
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,6 +74,7 @@ const Profile = () => {
   // Handle verification email
   const handleSendVerificationEmail = async () => {
     await sendVerificationEmail();
+    setShowEmailVerification(true);
   };
 
   // Handle logout
@@ -211,6 +213,11 @@ const Profile = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <EmailVerificationPopup 
+        isOpen={showEmailVerification}
+        onClose={() => setShowEmailVerification(false)}
+      />
     </div>
   );
 };

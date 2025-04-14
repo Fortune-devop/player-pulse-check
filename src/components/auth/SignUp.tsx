@@ -43,9 +43,10 @@ interface SignUpProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenSignIn: () => void;
+  showVerificationPopup?: () => void;
 }
 
-const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
+const SignUp = ({ isOpen, onClose, onOpenSignIn, showVerificationPopup }: SignUpProps) => {
   const navigate = useNavigate();
   const { register, googleSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -69,6 +70,12 @@ const SignUp = ({ isOpen, onClose, onOpenSignIn }: SignUpProps) => {
       const fullName = `${values.firstName} ${values.lastName}`;
       await register(fullName, values.email, values.password);
       onClose();
+      
+      // Show verification popup if available
+      if (showVerificationPopup) {
+        showVerificationPopup();
+      }
+      
       navigate('/profile');
     } catch (error) {
       console.error("Registration error:", error);

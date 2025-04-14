@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,12 +9,14 @@ import SignIn from './auth/SignIn';
 import SignUp from './auth/SignUp';
 import ForgotPassword from './auth/ForgotPassword';
 import Waitlist from './auth/Waitlist';
+import EmailVerificationPopup from './auth/EmailVerificationPopup';
 
 const Header = () => {
   const { isAuthenticated } = useAuth();
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
 
   const openSignIn = () => {
     setShowSignIn(true);
@@ -31,6 +34,10 @@ const Header = () => {
     setShowForgotPassword(true);
     setShowSignIn(false);
     setShowSignUp(false);
+  };
+
+  const showVerificationPopup = () => {
+    setShowEmailVerification(true);
   };
 
   return (
@@ -67,7 +74,7 @@ const Header = () => {
           </Button>
           
           {isAuthenticated ? (
-            <UserMenu />
+            <UserMenu showVerificationPopup={showVerificationPopup} />
           ) : (
             <>
               <Button variant="outline" onClick={openSignIn}>
@@ -94,12 +101,18 @@ const Header = () => {
         isOpen={showSignUp} 
         onClose={() => setShowSignUp(false)} 
         onOpenSignIn={openSignIn} 
+        showVerificationPopup={showVerificationPopup}
       />
       
       <ForgotPassword
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
         onBackToSignIn={openSignIn}
+      />
+      
+      <EmailVerificationPopup
+        isOpen={showEmailVerification}
+        onClose={() => setShowEmailVerification(false)}
       />
     </header>
   );

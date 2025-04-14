@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -10,13 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { User, Settings, LogOut } from 'lucide-react';
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/context/AuthContext';
+import { User, Settings, LogOut, Mail } from 'lucide-react';
 
-const UserMenu = () => {
-  const { user, logout } = useAuth();
+interface UserMenuProps {
+  showVerificationPopup?: () => void;
+}
 
-  // Get initials for avatar fallback
+const UserMenu = ({ showVerificationPopup }: UserMenuProps) => {
+  const { user, logout, sendVerificationEmail } = useAuth();
+  
+  if (!user) {
+    return null;
+  }
+
+  // Generate initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -25,36 +34,47 @@ const UserMenu = () => {
       .toUpperCase();
   };
 
+  const handleSendVerificationEmail = async () => {
+    await sendVerificationEmail();
+    if (showVerificationPopup) {
+      showVerificationPopup();
+    }
+  };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="focus:outline-none">
-        <Avatar className="h-9 w-9 cursor-pointer border-2 border-primary">
-          <AvatarImage src={user?.avatar || ''} alt={user?.name || 'User'} />
-          <AvatarFallback>{user ? getInitials(user.name) : 'U'}</AvatarFallback>
-        </Avatar>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user.avatar || ''} alt={user.name} />
+            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel>
-          <div className="flex flex-col">
-            <span className="font-medium">{user?.name}</span>
-            <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile" className="cursor-pointer">
+          <Link to="/profile" className="w-full cursor-pointer">
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/profile" className="cursor-pointer">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </Link>
-        </DropdownMenuItem>
+        {!user.emailVerified && (
+          <DropdownMenuItem onClick={handleSendVerificationEmail}>
+            <Mail className="mr-2 h-4 w-4" />
+            <span>Verify Email</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
+        <DropdownMenuItem onClick={logout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
