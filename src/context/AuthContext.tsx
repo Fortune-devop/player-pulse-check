@@ -11,7 +11,17 @@ import {
   updateProfile,
   sendEmailVerification,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  collection, 
+  addDoc, 
+  serverTimestamp, 
+  query, 
+  where, 
+  getDocs 
+} from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import { toast } from 'sonner';
 
