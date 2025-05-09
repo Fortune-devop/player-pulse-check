@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import MatchCard from '@/components/MatchCard';
@@ -33,7 +34,7 @@ const Index = () => {
     homeTeamId: teams[0].id,
     awayTeamId: teams[1].id,
     date: new Date(),
-    status: 'upcoming', // Fixed: Using a valid enum value instead of string
+    status: 'upcoming' as const, // Fix: Explicitly typing as a literal type
     homeScore: 0,
     awayScore: 0,
   };
