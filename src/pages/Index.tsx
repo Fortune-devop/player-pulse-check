@@ -27,6 +27,20 @@ const Index = () => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
+  // Add a test match at the end to verify horizontal scrolling
+  const testMatch = {
+    ...matchesToShow[0],
+    id: 'test-match',
+    homeTeamId: teams[0].id,
+    awayTeamId: teams[1].id,
+    date: new Date(),
+    status: 'upcoming',
+    homeScore: 0,
+    awayScore: 0,
+  };
+  
+  const matchesWithTestMatch = [...matchesToShow, testMatch];
+
   // Get featured players (using the ones with ratings)
   const featuredPlayers = players.slice(0, 4);
 
@@ -112,11 +126,11 @@ const Index = () => {
       {/* Live & Upcoming Matches */}
       <section className="py-12 bg-gray-50">
         <div className="container px-4 md:px-6">
-          <h2 className="text-2xl font-bold mb-8">Live & Upcoming Matches</h2>
+          <h2 className="text-2xl font-bold mb-6">Live & Upcoming Matches</h2>
           
           {isMobile ? (
             // Mobile view - regular grid
-            <div className="grid grid-cols-1 gap-6 auto-rows-fr">
+            <div className="grid grid-cols-1 gap-4 auto-rows-fr">
               {matchesToShow.map(match => {
                 const homeTeam = getTeamById(match.homeTeamId);
                 const awayTeam = getTeamById(match.awayTeamId);
@@ -155,14 +169,14 @@ const Index = () => {
                 className="w-full"
               >
                 <CarouselContent className="-ml-2 md:-ml-4">
-                  {matchesToShow.map((match) => {
+                  {matchesWithTestMatch.map((match) => {
                     const homeTeam = getTeamById(match.homeTeamId);
                     const awayTeam = getTeamById(match.awayTeamId);
                     
                     if (!homeTeam || !awayTeam) return null;
                     
                     return (
-                      <CarouselItem key={match.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/3 h-full">
+                      <CarouselItem key={match.id} className="pl-2 md:pl-4 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 h-full">
                         <MatchCard
                           id={match.id}
                           homeTeam={{
@@ -184,8 +198,8 @@ const Index = () => {
                   })}
                 </CarouselContent>
                 <div className="hidden md:block">
-                  <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" />
-                  <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
+                  <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2" />
+                  <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2" />
                 </div>
               </Carousel>
             </div>
