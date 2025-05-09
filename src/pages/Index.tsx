@@ -54,7 +54,7 @@ const Index = () => {
 
   return (
     <>
-      {/* Modern Hero Section with Image */}
+      {/* Mobile-optimized Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="absolute inset-0 bg-black/30 z-10"></div>
         
@@ -66,7 +66,7 @@ const Index = () => {
           />
         </div>
         
-        <div className="container relative z-20 px-4 md:px-6 py-16 md:py-24 flex flex-col md:flex-row items-center">
+        <div className="container relative z-20 px-4 md:px-6 py-12 md:py-24 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 md:pr-8 mb-8 md:mb-0">
             <MotionWrapper 
               variants={{
@@ -74,22 +74,22 @@ const Index = () => {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
               }}
             >
-              <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+              <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl md:text-5xl'} font-bold mb-4 leading-tight`}>
                 Rate Your Favorite <span className="text-warning">Athletes</span> Like Never Before
               </h1>
-              <p className="text-lg mb-8 text-white/90 max-w-lg">
-                Join thousands of passionate sports fans sharing opinions and insights on player performances across NBA, NFL, and Soccer
+              <p className={`${isMobile ? 'text-base' : 'text-lg'} mb-6 md:mb-8 text-white/90 max-w-lg`}>
+                Join thousands of passionate sports fans sharing opinions and insights on player performances
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 <Link to="/matches">
-                  <button className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-all duration-300">
+                  <button className={`bg-white text-primary hover:bg-gray-100 font-semibold ${isMobile ? 'py-2 px-4 text-sm' : 'py-3 px-6'} rounded-lg flex items-center gap-2 transition-all duration-300`}>
                     Browse Matches
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
                   </button>
                 </Link>
                 <button 
                   onClick={openWaitlist} 
-                  className="bg-transparent border border-white hover:bg-white/10 font-semibold py-3 px-6 rounded-lg transition-all duration-300"
+                  className={`bg-transparent border border-white hover:bg-white/10 font-semibold ${isMobile ? 'py-2 px-4 text-sm' : 'py-3 px-6'} rounded-lg transition-all duration-300`}
                 >
                   Join Waitlist
                 </button>
@@ -97,40 +97,42 @@ const Index = () => {
             </MotionWrapper>
           </div>
           
-          <div className="md:w-1/2">
-            <MotionWrapper variants={scaleIn}>
-              <div className="relative">
-                <div className="w-64 h-64 md:w-80 md:h-80 bg-warning/20 absolute -top-6 -left-6 rounded-full blur-2xl"></div>
-                <div className="bg-white p-4 rounded-2xl shadow-xl rotate-3 relative z-10">
-                  <div className="bg-gray-100 p-3 rounded-xl">
-                    <img 
-                      src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800" 
-                      alt="Player ratings dashboard" 
-                      className="rounded-lg shadow-sm"
-                    />
-                  </div>
-                  <div className="mt-3 p-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-green-500 h-3 w-3 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Live Ratings</span>
+          {!isMobile && (
+            <div className="md:w-1/2">
+              <MotionWrapper variants={scaleIn}>
+                <div className="relative">
+                  <div className="w-64 h-64 md:w-80 md:h-80 bg-warning/20 absolute -top-6 -left-6 rounded-full blur-2xl"></div>
+                  <div className="bg-white p-4 rounded-2xl shadow-xl rotate-3 relative z-10">
+                    <div className="bg-gray-100 p-3 rounded-xl">
+                      <img 
+                        src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800" 
+                        alt="Player ratings dashboard" 
+                        className="rounded-lg shadow-sm"
+                      />
                     </div>
-                    <div className="text-sm font-bold text-primary">RateMyPlayer.com</div>
+                    <div className="mt-3 p-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-green-500 h-3 w-3 rounded-full"></div>
+                        <span className="text-sm font-medium text-gray-700">Live Ratings</span>
+                      </div>
+                      <div className="text-sm font-bold text-primary">RateMyPlayer.com</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </MotionWrapper>
-          </div>
+              </MotionWrapper>
+            </div>
+          )}
         </div>
       </section>
       
-      {/* Live & Upcoming Matches */}
-      <section className="py-12 bg-gray-50">
+      {/* Live & Upcoming Matches - Mobile Optimized */}
+      <section className="py-8 md:py-12 bg-gray-50">
         <div className="container px-4 md:px-6">
-          <h2 className="text-2xl font-bold mb-6">Live & Upcoming Matches</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Live & Upcoming Matches</h2>
           
           {isMobile ? (
-            // Mobile view - regular grid
-            <div className="grid grid-cols-1 gap-4 auto-rows-fr">
+            // Mobile view - horizontal scroll with snap
+            <div className="overflow-x-auto snap-x snap-mandatory flex gap-3 pb-6 -mx-4 px-4">
               {matchesToShow.map(match => {
                 const homeTeam = getTeamById(match.homeTeamId);
                 const awayTeam = getTeamById(match.awayTeamId);
@@ -138,23 +140,24 @@ const Index = () => {
                 if (!homeTeam || !awayTeam) return null;
                 
                 return (
-                  <MatchCard
-                    key={match.id}
-                    id={match.id}
-                    homeTeam={{
-                      name: homeTeam.name,
-                      logo: homeTeam.logo,
-                      score: match.homeScore
-                    }}
-                    awayTeam={{
-                      name: awayTeam.name,
-                      logo: awayTeam.logo,
-                      score: match.awayScore
-                    }}
-                    date={match.date}
-                    status={match.status}
-                    sport={match.sport}
-                  />
+                  <div key={match.id} className="snap-start flex-shrink-0 w-[85%]">
+                    <MatchCard
+                      id={match.id}
+                      homeTeam={{
+                        name: homeTeam.name,
+                        logo: homeTeam.logo,
+                        score: match.homeScore
+                      }}
+                      awayTeam={{
+                        name: awayTeam.name,
+                        logo: awayTeam.logo,
+                        score: match.awayScore
+                      }}
+                      date={match.date}
+                      status={match.status}
+                      sport={match.sport}
+                    />
+                  </div>
                 );
               })}
             </div>
@@ -207,84 +210,112 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Featured Players */}
-      <section className="py-12">
+      {/* Featured Players - Mobile Optimized */}
+      <section className="py-8 md:py-12">
         <div className="container px-4 md:px-6">
-          <h2 className="text-2xl font-bold mb-8">Featured Players</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {featuredPlayers.map(player => {
-              const team = getTeamById(player.teamId);
-              if (!team) return null;
-              
-              return (
-                <PlayerCard
-                  key={player.id}
-                  id={player.id}
-                  name={player.name}
-                  position={player.position}
-                  teamName={team.name}
-                  teamLogo={team.logo}
-                  photoUrl={player.photoUrl}
-                  rating={4}
-                  totalRatings={24}
-                  sport={team.sport}
-                />
-              );
-            })}
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-8">Featured Players</h2>
+          
+          {isMobile ? (
+            // Mobile view - horizontal scroll with snap
+            <div className="overflow-x-auto snap-x snap-mandatory flex gap-3 pb-6 -mx-4 px-4">
+              {featuredPlayers.map(player => {
+                const team = getTeamById(player.teamId);
+                if (!team) return null;
+                
+                return (
+                  <div key={player.id} className="snap-start flex-shrink-0 w-[85%]">
+                    <PlayerCard
+                      id={player.id}
+                      name={player.name}
+                      position={player.position}
+                      teamName={team.name}
+                      teamLogo={team.logo}
+                      photoUrl={player.photoUrl}
+                      rating={4}
+                      totalRatings={24}
+                      sport={team.sport}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // Desktop view - grid
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {featuredPlayers.map(player => {
+                const team = getTeamById(player.teamId);
+                if (!team) return null;
+                
+                return (
+                  <PlayerCard
+                    key={player.id}
+                    id={player.id}
+                    name={player.name}
+                    position={player.position}
+                    teamName={team.name}
+                    teamLogo={team.logo}
+                    photoUrl={player.photoUrl}
+                    rating={4}
+                    totalRatings={24}
+                    sport={team.sport}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+      
+      {/* How it Works - Mobile Optimized */}
+      <section className="py-8 md:py-12 bg-gray-50">
+        <div className="container px-4 md:px-6">
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-center">How RateMyPlayer Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <span className="text-lg md:text-xl font-bold">1</span>
+              </div>
+              <h3 className="text-base md:text-lg font-semibold mb-2">Join the Waitlist</h3>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Sign up to join our exclusive community of sports fans
+              </p>
+            </div>
+            
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <span className="text-lg md:text-xl font-bold">2</span>
+              </div>
+              <h3 className="text-base md:text-lg font-semibold mb-2">Get Approved Access</h3>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Once approved, you'll have full access to rate players
+              </p>
+            </div>
+            
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <span className="text-lg md:text-xl font-bold">3</span>
+              </div>
+              <h3 className="text-base md:text-lg font-semibold mb-2">Rate & Engage</h3>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Rate players and connect with other passionate fans
+              </p>
+            </div>
           </div>
         </div>
       </section>
       
-      {/* How it Works */}
-      <section className="py-12 bg-gray-50">
-        <div className="container px-4 md:px-6">
-          <h2 className="text-2xl font-bold mb-8 text-center">How RateMyPlayer Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-              <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-xl font-bold">1</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Join the Waitlist</h3>
-              <p className="text-muted-foreground">
-                Sign up to join our exclusive community of sports fans and analysts
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-              <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-xl font-bold">2</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Get Approved Access</h3>
-              <p className="text-muted-foreground">
-                Once approved, you'll have full access to rate players and join discussions
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-              <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-xl font-bold">3</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Rate & Engage</h3>
-              <p className="text-muted-foreground">
-                Rate players, share insights, and connect with other passionate fans
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* CTA */}
-      <section className="py-12 bg-primary text-white">
+      {/* CTA - Mobile Optimized */}
+      <section className="py-8 md:py-12 bg-primary text-white">
         <div className="container px-4 md:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4">
             Join Our Exclusive Community
           </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
+          <p className={`${isMobile ? 'text-base' : 'text-lg'} mb-6 md:mb-8 max-w-2xl mx-auto`}>
             We're carefully growing our community of dedicated sports fans. Request access today!
           </p>
           <button 
             onClick={openWaitlist} 
-            className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg"
+            className={`bg-white text-primary hover:bg-gray-100 font-semibold ${isMobile ? 'py-2 px-6' : 'py-3 px-8'} rounded-lg`}
           >
             Join the Waitlist
           </button>
