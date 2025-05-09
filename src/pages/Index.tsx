@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import MatchCard from '@/components/MatchCard';
@@ -7,10 +8,13 @@ import { ArrowRight } from 'lucide-react';
 import MotionWrapper, { scaleIn } from '@/components/animations/MotionWrapper';
 import SignUp from '@/components/auth/SignUp';
 import Waitlist from '@/components/auth/Waitlist';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const Index = () => {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showWaitlist, setShowWaitlist] = useState(false);
+  const isMobile = useIsMobile();
   
   // Get matches to display
   const matchesToShow = [...matches].sort((a, b) => {
@@ -109,34 +113,83 @@ const Index = () => {
       <section className="py-12 bg-gray-50">
         <div className="container px-4 md:px-6">
           <h2 className="text-2xl font-bold mb-8">Live & Upcoming Matches</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-            {matchesToShow.map(match => {
-              const homeTeam = getTeamById(match.homeTeamId);
-              const awayTeam = getTeamById(match.awayTeamId);
-              
-              if (!homeTeam || !awayTeam) return null;
-              
-              return (
-                <MatchCard
-                  key={match.id}
-                  id={match.id}
-                  homeTeam={{
-                    name: homeTeam.name,
-                    logo: homeTeam.logo,
-                    score: match.homeScore
-                  }}
-                  awayTeam={{
-                    name: awayTeam.name,
-                    logo: awayTeam.logo,
-                    score: match.awayScore
-                  }}
-                  date={match.date}
-                  status={match.status}
-                  sport={match.sport}
-                />
-              );
-            })}
-          </div>
+          
+          {isMobile ? (
+            // Mobile view - regular grid
+            <div className="grid grid-cols-1 gap-6 auto-rows-fr">
+              {matchesToShow.map(match => {
+                const homeTeam = getTeamById(match.homeTeamId);
+                const awayTeam = getTeamById(match.awayTeamId);
+                
+                if (!homeTeam || !awayTeam) return null;
+                
+                return (
+                  <MatchCard
+                    key={match.id}
+                    id={match.id}
+                    homeTeam={{
+                      name: homeTeam.name,
+                      logo: homeTeam.logo,
+                      score: match.homeScore
+                    }}
+                    awayTeam={{
+                      name: awayTeam.name,
+                      logo: awayTeam.logo,
+                      score: match.awayScore
+                    }}
+                    date={match.date}
+                    status={match.status}
+                    sport={match.sport}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            // Desktop view - horizontal carousel
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: false,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {matchesToShow.map((match) => {
+                    const homeTeam = getTeamById(match.homeTeamId);
+                    const awayTeam = getTeamById(match.awayTeamId);
+                    
+                    if (!homeTeam || !awayTeam) return null;
+                    
+                    return (
+                      <CarouselItem key={match.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/3 h-full">
+                        <MatchCard
+                          id={match.id}
+                          homeTeam={{
+                            name: homeTeam.name,
+                            logo: homeTeam.logo,
+                            score: match.homeScore
+                          }}
+                          awayTeam={{
+                            name: awayTeam.name,
+                            logo: awayTeam.logo,
+                            score: match.awayScore
+                          }}
+                          date={match.date}
+                          status={match.status}
+                          sport={match.sport}
+                        />
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                <div className="hidden md:block">
+                  <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" />
+                  <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2" />
+                </div>
+              </Carousel>
+            </div>
+          )}
         </div>
       </section>
       
